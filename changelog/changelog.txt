@@ -1,0 +1,4 @@
+6/8/2018 
+Fixed Timers not updating correctly.
+Added TimeStamp to Email Subject Line.
+Added TimeStamp to log file when email sent.
