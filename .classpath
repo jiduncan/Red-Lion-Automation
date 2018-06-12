@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/httpcore-4.4.6.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/okhttp-3.9.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/okio-1.13.0.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_172/lib/mail-1.4.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
