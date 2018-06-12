@@ -33,12 +33,14 @@ public class RedLionDriver {
 	static WebDriver driver;
 	static Session session;
 	static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyy-MM-dd");
+	static FTPAutomation ftp;
 	
 	public static void main(String[] args) throws InterruptedException, FileNotFoundException {
 		LocalDateTime now = LocalDateTime.now();
 		File dir = new File("C:\\Users\\johnny\\Desktop\\logs\\javalogs\\" + dtf.format(now) + ".txt");
 		PrintStream o = new PrintStream(dir);
 		System.setOut(o);
+		ftp = new FTPAutomation();
 		//PrintStream o = new PrintStream(dir);
 		//run continuously
 		while (true) {
@@ -97,10 +99,10 @@ public class RedLionDriver {
 	public static void SendEmailtoMAILJET(String subj, String msg) throws InterruptedException {
 		
 		System.out.println("Connecting to Email Server");
-		final String APIKey = "0c3e68ea7f47532f272f0f7be152f31f";
-		final String SecretKey = "74e22ffbd9240c6aa99fdb1ae350a041";
-		String From = "redlionptv5690@gmail.com";
-		String To = "evilonyxx@gmail.com,johnny@gaylandwardseed.com";
+		final String APIKey = "*******";
+		final String SecretKey = "********";
+		String From = "********";
+		String To = "**************";
 	
 		Properties props = new Properties ();
 		
@@ -139,10 +141,10 @@ public class RedLionDriver {
 	}
 	public static void launchChrome() throws InterruptedException  {
 		
-		String username = "java";
-		String password = "HTMLParser";
+		String username = "*******";
+		String password = "********";
 		String credentials = username + ":" + password;
-		String URL = "http://"+credentials+"@192.168.1.180/auto/002";
+		String URL = "http://"+credentials+"@***.***.***.***";
 		String exePath = "C:\\Users\\johnny\\eclipse-workspace\\downloadlocation\\chromedriver.exe";
 		System.setProperty("webdriver.chrome.driver", exePath);
 		String Message, Subject;
