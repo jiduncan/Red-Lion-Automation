@@ -15,16 +15,18 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
-
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 /******************************************************************************************
+ * The program uses a WebDriver to scrape information off of the Red Lion PTV
+ * web server @ 192.168.1.180. If the values change an email will be sent out to their
+ * respective email address.
  * 
  * @author Johnny Duncan
- * @version: 1.0.0
- * @LastUpdated: 6/8/2018
- */
+ * @version: 1.1
+ * @LastUpdated: 6/18/2018                                                             
+ *****************************************************************************************/
 public class RedLionDriver {
 	
 	static int urlFirstTimeFlag = 0;
@@ -33,39 +35,40 @@ public class RedLionDriver {
 	static WebDriver driver;
 	static Session session;
 	static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyy-MM-dd");
-	static FTPAutomation ftp;
+	//static Logger l = Logger.getLogger(RedLionDriver.class.getName());
 	
 	public static void main(String[] args) throws InterruptedException, FileNotFoundException {
+
 		LocalDateTime now = LocalDateTime.now();
+		//System.out.println() will now print to file instead of console.
 		File dir = new File("C:\\Users\\johnny\\Desktop\\logs\\javalogs\\" + dtf.format(now) + ".txt");
 		PrintStream o = new PrintStream(dir);
 		System.setOut(o);
-		ftp = new FTPAutomation();
-		//PrintStream o = new PrintStream(dir);
+		
 		//run continuously
 		while (true) {
 			Calendar cal = Calendar.getInstance();
-			//get the day of the week Sunday starts at 1, MON-2,TUES-3,WED-4,THURS-5,FRI-6,SAT-7
+			//get the day of the week Sun-1, MON-2,TUES-3,WED-4,THURS-5,FRI-6,SAT-7
 			int day = cal.get(Calendar.DAY_OF_WEEK);
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
 			int minute = cal.get(Calendar.MINUTE);
+			int second = cal.get(Calendar.SECOND);
 			//CONTINUE AS LONG AS MON-FRI
 			if (day >= 2 && day <= 6) {
-				System.out.println("Day = " + day);
-				System.out.println("Hour = " + hour);
-				System.out.println("Minute = " + minute);
+				System.out.println("Day = " + day + " Hour = " + hour + 
+						" Minute = " + minute + " Second = " + second);
 				//Start at 7am till lunch time; sleep for 30 seconds.
 				if (hour >= 7 && (hour <=11 && minute <= 59)) {
-					System.out.println("7-11:59am part I");
+					System.out.println("7-11:59am");
 					launchChrome();
 					Thread.sleep(30000);
-					System.out.println("7-11:59am part II");
+					//System.out.println("7-11:59am part II");
 				}//if after lunch time and before close; sleep for 30 seconds
 				else if (hour >= 13 && hour < 18) {
-					System.out.println("1-6pm part I");
+					System.out.println("1-6pm");
 					launchChrome();
 					Thread.sleep(30000);
-					System.out.println("1-6pm part II");
+					//System.out.println("1-6pm part II");
 				}
 				//lunch-time sleep for 5 minute intervals
 				else if (hour == 12 && minute <= 59) {
@@ -87,10 +90,6 @@ public class RedLionDriver {
 		}
 	}
 	
-	public static void automationPause() throws InterruptedException {
-		Thread.sleep(5000);		
-	}
-	
 	public static Timestamp timeStamp() {
 		Timestamp ts = new Timestamp(System.currentTimeMillis());
 		return ts;
@@ -107,6 +106,7 @@ public class RedLionDriver {
 		Properties props = new Properties ();
 		
 		//using Mailjet.com as SMTP Server.
+		//SSL wrapping
 		props.put ("mail.smtp.host", "in-v3.mailjet.com");
 		props.put ("mail.smtp.socketFactory.port", "465");
 		props.put ("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -146,6 +146,7 @@ public class RedLionDriver {
 		String credentials = username + ":" + password;
 		String URL = "http://"+credentials+"@***.***.***.***";
 		String exePath = "C:\\Users\\johnny\\eclipse-workspace\\downloadlocation\\chromedriver.exe";
+
 		System.setProperty("webdriver.chrome.driver", exePath);
 		String Message, Subject;
 		//logs into url first time
@@ -164,10 +165,8 @@ public class RedLionDriver {
 			westTmp = Integer.parseInt(driver.findElement(By.xpath("/html/body/div/table/tbody/tr[3]/td[2]/font")).getText().trim());
 			rebaggerTmp = Integer.parseInt(driver.findElement(By.xpath("/html/body/div/table/tbody/tr[4]/td[2]/font")).getText().trim());
 			emailTestTmp = Integer.parseInt(driver.findElement(By.xpath("/html/body/div/table/tbody/tr[5]/td[2]/font")).getText().trim());
-			System.out.println("East = " + EastLine);
-			System.out.println("West = " + WestLine);
-			System.out.println("Rebagger = " + Rebagger);
-			System.out.println("EmailTest = " + emailTest);
+			System.out.println("East = " + EastLine + " West = " + WestLine + " Rebagger = " + Rebagger);
+			//System.out.println("EmailTest = " + emailTest);
 			Timestamp ts = timeStamp();
 			//east line alarm count change
 			if (EastLine != eastTmp) {
@@ -176,7 +175,7 @@ public class RedLionDriver {
 				Message = "East Line has been Down for 15 Minutes!!!";
 				EastLine = eastTmp;
 				SendEmailtoMAILJET(Subject, Message);
-				automationPause();
+				Thread.sleep(5000);	
 			}
 			if (WestLine != westTmp) {
 				System.out.println("West Line Down " + ts);
@@ -184,7 +183,7 @@ public class RedLionDriver {
 				Message = "West Line has been Down for 15 Minutes!!!";
 				WestLine = westTmp;
 				SendEmailtoMAILJET(Subject, Message);
-				automationPause();
+				Thread.sleep(5000);	
 			}
 			if (Rebagger != rebaggerTmp) {
 				System.out.println("Rebagger Line Down " + ts);
@@ -192,16 +191,17 @@ public class RedLionDriver {
 				Message = "Rebagger Line has been Down for 15 Minutes!!!";
 				Rebagger = rebaggerTmp;
 				SendEmailtoMAILJET(Subject, Message);
-				automationPause();
+				Thread.sleep(5000);	
 			}
-			if (emailTest != emailTestTmp) {
+			/*if (emailTest != emailTestTmp) {
 				System.out.println("Email Test " + ts);
 				Subject = "Email Test " + ts;
 				Message = "Email Test Button was incremented";
 				emailTest = emailTestTmp;
 				SendEmailtoMAILJET(Subject, Message);
 				automationPause();
-			}
+			
+			}*/
 		}
 		else {
 			//reset flag if something odd happens???

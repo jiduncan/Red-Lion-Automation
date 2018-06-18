@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_171/lib/javax.mail.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/client-combined-3.12.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/client-combined-3.12.0-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/byte-buddy-1.8.3.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/okhttp-3.9.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/johnny/eclipse-workspace/downloadlocation/webdriver/libs/okio-1.13.0.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_172/lib/mail-1.4.7.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_172/lib/commons-net-3.6/commons-net-3.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
