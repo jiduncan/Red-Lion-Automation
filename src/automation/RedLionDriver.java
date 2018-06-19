@@ -24,12 +24,13 @@ import javax.mail.internet.MimeMessage;
  * respective email address.
  * 
  * @author Johnny Duncan
- * @version: 1.1
- * @LastUpdated: 6/18/2018                                                             
+ * @version: 1.2
+ * @LastUpdated: 6/19/2018                                                             
  *****************************************************************************************/
 public class RedLionDriver {
 	
 	static int urlFirstTimeFlag = 0;
+	static int fileFlag = 1;
 	static int EastLine, WestLine, Rebagger, emailTest;
 	static int eastTmp, westTmp, rebaggerTmp, emailTestTmp;
 	static WebDriver driver;
@@ -57,18 +58,18 @@ public class RedLionDriver {
 			if (day >= 2 && day <= 6) {
 				System.out.println("Day = " + day + " Hour = " + hour + 
 						" Minute = " + minute + " Second = " + second);
+				
 				//Start at 7am till lunch time; sleep for 30 seconds.
 				if (hour >= 7 && (hour <=11 && minute <= 59)) {
 					System.out.println("7-11:59am");
 					launchChrome();
 					Thread.sleep(30000);
-					//System.out.println("7-11:59am part II");
-				}//if after lunch time and before close; sleep for 30 seconds
+				}	
+				//if after lunch time and before close; sleep for 30 seconds
 				else if (hour >= 13 && hour < 18) {
 					System.out.println("1-6pm");
 					launchChrome();
 					Thread.sleep(30000);
-					//System.out.println("1-6pm part II");
 				}
 				//lunch-time sleep for 5 minute intervals
 				else if (hour == 12 && minute <= 59) {
@@ -76,14 +77,23 @@ public class RedLionDriver {
 					Thread.sleep(300000);
 				}
 				//during off hours sleep for 1 hour periods
+				//sets fileFlag to 0
 				else {
+					fileFlag = 0;
 					System.out.println("off-hours");
 					Thread.sleep(3600000);
 				}
 			}
 			//sleep for an hour during off hours
+			//will also create a new file at midnight when flag is 0
 			else {
 				System.out.println("outside work hours");
+				
+				if (hour==0 && fileFlag==0) {
+					fileFlag = 1;
+					dir = new File("C:\\Users\\johnny\\Desktop\\logs\\javalogs\\" 
+							+ dtf.format(now) + ".txt");
+				}
 				Thread.sleep(3600000);
 				return;
 			}

@@ -1,8 +1,9 @@
 @echo off
 :: Created By: Johnny Duncan
-:: Last Modified: 6/12/18
+:: Last Modified: 6/18/18
 
 set flag=0
+set lockscreenflag=0
 set shutdownflag=0
 timeout /t 60
 
@@ -14,6 +15,7 @@ set "second=%time:~6,2%"
 echo %DAY% %hour% %minute% %second% 
 
 if %hour% geq 7 if %hour% leq 17 if %flag% equ 0 (goto runit)
+if %hour%==17 if %lockscreenflag%==0 (goto lock)
 if %hour% geq 18 if %hour% lss 7 if %flag% equ 1 (goto killit)
 if %DAY%==Fri if %hour%==19 (goto shutDownNow)
 
@@ -23,6 +25,14 @@ goto cont
 echo entered runit %time%
 start javaw -jar redlionexec.jar
 set flag=1
+set lockscreenflag=0
+timeout /t 60
+goto begin
+
+:lock
+echo entered lock %time%
+lockscreenflag=1
+rundll32.exe user32.dll, LockWorkStation
 timeout /t 60
 goto begin
 
