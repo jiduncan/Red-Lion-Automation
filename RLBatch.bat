@@ -5,7 +5,7 @@
 :: display off at 5pm daily. Computer will shutdown on Fri at 7pm.   :
 ::                                                                   :
 :: Created By: Johnny Duncan										 :
-:: Last Modified: 6/19/18											 :
+:: Last Modified: 6/20/18											 :
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set flag=0
@@ -19,20 +19,23 @@ set "DAY=%date:~0,3%"
 set "hour=%time:~0,2%"
 set "minute=%time:~3,2%"
 set "second=%time:~6,2%"
-echo %DAY% %hour% %minute% %second% 
+::set "myTime=%DAY% %hour%:%minute%-%second%"
+set "myDate=%date:~4,2%-%date:~7,2%-%date:~10,4%"
+echo %time% entered begin >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 
 :: if between 7am and 5pm and first time call runit
 if %hour% geq 7 if %hour% leq 17 if %flag% equ 0 (goto runit)
 :: 
 if %hour%==17 if %lockscreenflag%==0 (goto lock)
-
+::
 if %hour% geq 18 if %hour% lss 7 if %flag% equ 1 (goto killit)
+::
 if %DAY%==Fri if %hour%==19 (goto shutDownNow)
 
 goto cont
 
 :runit
-echo %time% entered runit
+echo %time% entered runit >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 start javaw -jar redlionexec.jar
 set flag=1
 set lockscreenflag=0
@@ -40,7 +43,7 @@ timeout /t 60
 goto begin
 
 :lock
-echo %time% entered lock 
+echo %time% entered lock >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 lockscreenflag=1
 cd "C:\Program Files\NirCmd\"
 start nircmd.exe cmdwait 5000 monitor off
@@ -49,7 +52,7 @@ timeout /t 60
 goto begin
 
 :killit
-echo %time% entered killit
+echo %time% entered killit >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 taskkill /im chromedriver.exe
 taskkill /im javaw.exe
 set flag=0
@@ -57,12 +60,12 @@ timout /t 60
 goto begin
 
 :cont
-echo %time% entered cont 
+echo %time% entered cont >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 timeout /t 60
 goto begin
 
 :shutDownNow
-echo %time% turning off now 
+echo %time% turning off now >> "C:\Users\johnny\Desktop\logs\batchlogs\%myDate%.txt"
 shutdown /s /f
 
 exit

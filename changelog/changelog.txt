@@ -6,3 +6,12 @@ Added TimeStamp to log file when email sent.
 6/18/2018
 cleaned up System.out.println()'s
 added additional comments
+
+6/20/2018
+!!!Fixed 7am alarm reset.
+Fixed adding a new log file to java program.
+added batchlogs
+added daily quota email.
+added driverquit() to close chromedriver.exe when done for the day.
+made timestamping easier to read.
+
