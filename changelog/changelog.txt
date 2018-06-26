@@ -15,3 +15,15 @@ added daily quota email.
 added driverquit() to close chromedriver.exe when done for the day.
 made timestamping easier to read.
 
+6/26/2018
+fixed logic flow
+added getWebValues() method
+added killall batch file
+fixed rlbatch file logic
+email method commented out for now.
+added printCurrentValues() method.
+added checkKillSwitch() method.
+cleaned up println statements.
+
+
+
