@@ -25,8 +25,8 @@ import javax.mail.internet.MimeMessage;
  * respective email address.
  * 
  * @author Johnny Duncan
- * @version: 1.2.1
- * @LastUpdated: 6/26/2018                                                             
+ * @version: 1.2.2
+ * @LastUpdated: 6/29/2018                                                             
  *****************************************************************************************/
 public class RedLionDriver {
 	
@@ -80,6 +80,7 @@ public class RedLionDriver {
 			}
 			//sleep for an hour during off hours resets alarm flags
 			//resets variables
+			//**********possibly just use system.exit() instead?
 			else {
 				checkKillSwitch();
 				if (alarmResetFlag == 1) {
@@ -98,16 +99,16 @@ public class RedLionDriver {
 		
 		//Start at 7am till lunch time; sleep for 30 seconds.
 //add method for checking quotacounts
-		if (hour >= 7 && (hour <=11 && minute <= 59)) {
-			System.out.println("7-11:59am");
+		if (hour >= 6 && (hour <= 11 && minute <= 59)) {
+			System.out.println("6:45am-11:59am");
 			launchChrome();
 			Thread.sleep(30000);
 			if (alarmResetFlag == 0) 
 				alarmResetFlag = 1;
 		}	
 		//if after lunch time and before close; sleep for 30 seconds
-		else if (hour >= 13 && hour < 18) {
-			System.out.println("1-6pm");
+		else if (hour >= 13 && hour <= 19 ) {
+			System.out.println("1-6:15pm");
 			launchChrome();
 			Thread.sleep(30000);
 		}
@@ -117,7 +118,7 @@ public class RedLionDriver {
 			launchChrome();
 			Thread.sleep(300000);
 		}
-		else if (hour == 18 && EODFlag == 0) {
+		else if ((hour == 18 && minute >= 15) && EODFlag == 0) {
 			EODFlag = 1;
 			System.out.println("operation closing for the day");
 			printTotals();
@@ -146,20 +147,25 @@ public class RedLionDriver {
 		
 		System.setProperty("webdriver.chrome.driver", exePath);
 		
-		String Message, Subject;
 		//logs into url first time
 		if (urlFirstTimeFlag == 0) {
 			driver = new ChromeDriver();
 			driver.get(URL);
-			driver.manage().window().setSize(new Dimension(250,450));
+			driver.manage().window().setSize(new Dimension(250,475));
 			urlFirstTimeFlag = 1;
 			//add current value then look to update after a change???
 			getWebValues();
 			printCurrentValues();
 			checkKillSwitch();
-			eLineCount = wLineCount = rebagLineCount = totalLineCount = 0;
-			EastLine = WestLine = Rebagger = emailTest = 0;
-			eastTmp = westTmp = rebaggerTmp = 0;
+			if (EastLine != 0) {
+				checkEastLine();
+			}
+			if (WestLine != 0) {
+				checkWestLine();
+			}
+			if (Rebagger != 0) {
+				checkRebagLine();
+			}
 		}
 		else if (urlFirstTimeFlag > 0) {
 			//refresh the web page to keep only one browser open.
@@ -169,32 +175,26 @@ public class RedLionDriver {
 			ts = timeStamp();
 			checkKillSwitch();
 			
-			//east line alarm count change
+			checkEastLine();
+			checkWestLine();
+			checkRebagLine();
+				
+		}
+		else {
+			//reset flag if something odd happens???
+			urlFirstTimeFlag = 0;
+		}
+	}	
+	public static void checkEastLine() throws InterruptedException {
+		String Subject, Message;
+		if (eastToggle == 1) {
 			if (EastLine != eastTmp) {
 				System.out.println(ts + " East Line Down ");
 				Subject = "East Line Down " + ts;
 				Message = "East Line has been Down for 15 Minutes!!!";
 				EastLine = eastTmp;
-				//SendEmailtoMAILJET(Subject, Message);
-				Thread.sleep(5000);	
-			}
-			//west line alarm count change
-			if (WestLine != westTmp) {
-				System.out.println(ts + " West Line Down ");
-				Subject = "West Line Down " + ts;
-				Message = "West Line has been Down for 15 Minutes!!!";
-				WestLine = westTmp;
-				//SendEmailtoMAILJET(Subject, Message);
-				Thread.sleep(5000);	
-			}
-			//rebagger line alarm count change
-			if (Rebagger != rebaggerTmp) {
-				System.out.println(ts + " Rebagger Line Down ");
-				Subject = "Rebagger is Down " + ts;
-				Message = "Rebagger Line has been Down for 15 Minutes!!!";
-				Rebagger = rebaggerTmp;
-				//SendEmailtoMAILJET(Subject, Message);
-				Thread.sleep(5000);	
+				SendEmailtoMAILJET(Subject, Message);
+				Thread.sleep(5000);
 			}
 			if (eLineCount >= eastDailyQuota && eastQuotaFlag == 0) {
 				System.out.println(ts + " East Line Quota Reached");
@@ -202,8 +202,26 @@ public class RedLionDriver {
 				eastQS = ts + " East Line Quota Reached";
 				Subject = "East Line quota of" + eastDailyQuota + " has been reached " + ts;
 				Message = "";
-				//SendEmailtoMAILJET(Subject,Message);
+				SendEmailtoMAILJET(Subject,Message);
 				Thread.sleep(5000);
+			}
+			
+		}
+		else {
+			EastLine = eastTmp;
+		}
+	}
+	
+	public static void checkWestLine() throws InterruptedException {
+		String Subject, Message;
+		if (westToggle == 1) {
+			if (WestLine != westTmp) {
+				System.out.println(ts + " West Line Down ");
+				Subject = "West Line Down " + ts;
+				Message = "West Line has been Down for 15 Minutes!!!";
+				WestLine = westTmp;
+				SendEmailtoMAILJET(Subject, Message);
+				Thread.sleep(5000);	
 			}
 			if (wLineCount >= westDailyQuota && westQuotaFlag == 0) {
 				System.out.println("West Line Quota Reached" + ts);
@@ -211,8 +229,25 @@ public class RedLionDriver {
 				westQS = "West Line Quota Reached " + ts;
 				Subject = "West Line quota of" + westDailyQuota + " has been reached " + ts;
 				Message = "";
-				//SendEmailtoMAILJET(Subject,Message);
+				SendEmailtoMAILJET(Subject,Message);
 				Thread.sleep(5000);
+			}
+		}
+		else {
+			WestLine = westTmp;
+		}
+	}
+	
+	public static void checkRebagLine() throws InterruptedException {
+		String Subject, Message;
+		if (rebagToggle == 1) {
+			if (Rebagger != rebaggerTmp) {
+				System.out.println(ts + " Rebagger Line Down ");
+				Subject = "Rebagger is Down " + ts;
+				Message = "Rebagger Line has been Down for 15 Minutes!!!";
+				Rebagger = rebaggerTmp;
+				SendEmailtoMAILJET(Subject, Message);
+				Thread.sleep(5000);	
 			}
 			if (rebagLineCount >= rebagDailyQuota && rebagQuotaFlag == 0) {
 				System.out.println("Rebagger Line Quota Reached" + ts);
@@ -220,16 +255,14 @@ public class RedLionDriver {
 				rebagQS = "Rebagger Line Quota Reached " + ts;
 				Subject = "Rebagger Line quota of" + rebagDailyQuota + " has been reached " + ts;
 				Message = "";
-				//SendEmailtoMAILJET(Subject,Message);
+				SendEmailtoMAILJET(Subject,Message);
 				Thread.sleep(5000);
 			}
 		}
 		else {
-			//reset flag if something odd happens???
-			urlFirstTimeFlag = 0;
+			Rebagger = rebaggerTmp;
 		}
-		//return;
-	}	
+	}
 	
 	public static void getWebValues() {	
 		
@@ -256,7 +289,6 @@ public class RedLionDriver {
 		final String SecretKey = "********";
 		String From = "********";
 		String To = "**************";
-	
 		Properties props = new Properties ();
 			
 		//using Mailjet.com as SMTP Server.
@@ -293,15 +325,6 @@ public class RedLionDriver {
 			throw new RuntimeException (e);
 		}
 	}
-	public static void HMILogin() {
-		
-		String username = "java";
-		String password = "HTMLParser";
-		String credentials = username + ":" + password;
-		String URL = "http://"+credentials+"@192.168.1.180/auto/003";
-		String exePath = "C:\\Users\\johnny\\eclipse-workspace\\downloadlocation\\chromedriver.exe";
-		System.setProperty("webdriver.chrome.driver", exePath);
-	}
 	
 	//prints out counts to logger and emails end of day report.
 	public static void printTotals() throws InterruptedException {
@@ -316,7 +339,7 @@ public class RedLionDriver {
 				"\nEastAL = " + EastLine + 
 				"\nWestAL = " + WestLine + 
 				"\nRebaggerAL = " + Rebagger;
-		//SendEmailtoMAILJET(subj,msg);
+		SendEmailtoMAILJET(subj,msg);
 		Thread.sleep(5000);
 		
 	}
@@ -324,13 +347,13 @@ public class RedLionDriver {
 	public static void printCurrentValues() {
 		
 		System.out.println("  East = " + eLineCount);
-		System.out.println("  EastAL = " + EastLine); 
 		System.out.println("  West = " + wLineCount);
-		System.out.println("  WestAL = " + WestLine); 
 		System.out.println("  Rebagger = " +rebagLineCount);
-		System.out.println("  RebaggerAL = " + Rebagger);
 		System.out.println("  Total = " + totalLineCount);
-		
+		System.out.println("  East Alarm = " + EastLine); 
+		System.out.println("  West Alarm = " + WestLine); 
+		System.out.println("  Rebagger Alarm = " + Rebagger);
+
 	}
 	
 	public static void checkKillSwitch() {

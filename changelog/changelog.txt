@@ -25,5 +25,13 @@ added printCurrentValues() method.
 added checkKillSwitch() method.
 cleaned up println statements.
 
+6/29/2018
+changed batch script logic to use tasklist to find .exe instead of flags.
+added separate batch script to turnoff and lock screen.
+added checkEastLine() method
+added checkWestLine() method
+added checkRebagLine() method
+added toggle button logic to check""Line() methods.
+
 
 
