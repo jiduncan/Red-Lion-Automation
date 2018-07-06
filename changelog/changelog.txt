@@ -33,5 +33,12 @@ added checkWestLine() method
 added checkRebagLine() method
 added toggle button logic to check""Line() methods.
 
+7/2/2018
+moved end of day logic to before 1pm-6:15pm block
+
+7/6/2018 
+toggle logic is working
+live testing
+
 
 
